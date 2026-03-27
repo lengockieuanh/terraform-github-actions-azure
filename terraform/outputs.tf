@@ -1,6 +1,13 @@
+output "rg_name" {
+  value = azurerm_resource_group.main.name
+}
+
 output "vm_public_ip" {
-  description = "Public IP of the VM"
-  value       = azurerm_public_ip.vm.ip_address
+  value = azurerm_public_ip.vm.public_ip_address
+}
+
+output "admin_username" {
+  value = azurerm_linux_virtual_machine.vm.admin_username
 }
 
 output "vm_private_ip" {
