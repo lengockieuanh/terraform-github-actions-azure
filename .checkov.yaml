@@ -1,0 +1,36 @@
+# Checkov configuration for scanning Terraform files
+
+# Checks to run
+check:
+  - CKV_AZURE_1    # "Ensure that Key Vault is purge-protected"
+  - CKV_AZURE_2    # "Ensure that key vault enables purge protection"
+  - CKV_AZURE_3    # "Ensure that key vault enables soft delete"
+  - CKV_AZURE_4    # "Ensure that key vault key rotation is enabled"
+  - CKV_AZURE_5    # "Ensure that Azure Cache for Redis requires encrypted connections"
+  - CKV_AZURE_6    # "Ensure that Storage logging is enabled for Azure Queue Storage"
+  - CKV_AZURE_7    # "Ensure that Storage logging is enabled for Azure Blob Storage"
+  - CKV_AZURE_8    # "Ensure that Storage logging is enabled for Azure Table Storage"
+  - CKV_AZURE_9    # "Ensure that Storage blobs restrict public access"
+  - CKV_AZURE_10   # "Ensure that Storage blobs restrict public access"
+  - CKV_AZURE_11   # "Ensure that Function apps enforce HTTPS only"
+  - CKV_AZURE_12   # "Ensure that Function apps have identity enabled"
+  - CKV_AZURE_13   # "Ensure that App Service has identity enabled"
+  - CKV_AZURE_14   # "Ensure that App Service enforces HTTPS only"
+  - CKV_AZURE_15   # "Ensure that App Service uses managed identity"
+  - CKV_AZURE_16   # "Ensure that Storage uses customer-managed key for encryption"
+  - CKV_AZURE_17   # "Ensure that Storage enables Secure transfer required"
+  - CKV_AZURE_18   # "Ensure that App Service has a minimum TLS version of 1.2"
+  - CKV_AZURE_19   # "Ensure that Storage has encryption enabled"
+  - CKV_AZURE_20   # "Ensure that SQL servers do not allow ingress from 0.0.0.0/0 (ALL)"
+
+# Severity levels to enforce
+# CRITICAL, HIGH, MEDIUM, LOW, INFO
+framework:
+  - terraform
+
+# Skip checks if needed (example)
+skip-checks:
+  # - CKV_AZURE_XX  # Uncomment to skip specific check
+
+# Output format
+output: cli
