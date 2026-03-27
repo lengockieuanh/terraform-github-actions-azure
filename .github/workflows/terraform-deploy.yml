@@ -115,7 +115,6 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-        continue-on-error: true
         
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v4
@@ -124,7 +123,7 @@ jobs:
           path: ${{ env.WORKING_DIR }}/tfplan
           
       - name: Terraform Apply (on main branch push)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && success()
         run: terraform apply -no-color -auto-approve tfplan
         working-directory: ${{ env.WORKING_DIR }}
         env:
