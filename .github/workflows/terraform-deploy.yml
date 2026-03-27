@@ -135,7 +135,7 @@ jobs:
       - name: Export Terraform Outputs
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          terraform output -json > outputs.json
+          terraform output -json > outputs.json || echo "{}" > outputs.json
           cat outputs.json
         working-directory: ${{ env.WORKING_DIR }}
         
