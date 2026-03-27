@@ -1,5 +1,5 @@
 azure_region       = "Germany West Central"
-environment        = "dev"
+environment        = "test"
 project_name       = "terraform-demo"
 vm_size            = "Standard_B2s"
 admin_username     = "azureuser"

@@ -7,7 +7,7 @@ variable "azure_region" {
 variable "environment" {
   description = "Environment name"
   type        = string
-  default     = "dev"
+  default     = "test"
 }
 
 variable "project_name" {
