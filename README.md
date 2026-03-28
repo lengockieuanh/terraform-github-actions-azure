@@ -2,14 +2,7 @@
 
 Triển khai hạ tầng Azure tự động hóa bằng Terraform và GitHub Actions, kèm theo kiểm tra bảo mật với Checkov.
 
-## 📋 Yêu cầu
-
-- Azure subscription
-- GitHub repository
-- Azure CLI (`az` command)
-- Git
-
-## 🏗️ Cấu trúc hạ tầng
+## Cấu trúc hạ tầng
 
 ```
 VNet (10.0.0.0/16)
@@ -28,63 +21,12 @@ VNet (10.0.0.0/16)
     └── Deny all other inbound
 ```
 
-## 🔐 Setup Service Principal
-
-### Bước 1: Tạo Service Principal
-
-```bash
-# Lấy subscription ID
-SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-
-# Tạo Service Principal
-az ad sp create-for-rbac \
-  --name "terraform-sp" \
-  --role "Contributor" \
-  --scopes "/subscriptions/$SUBSCRIPTION_ID"
-```
-
-Output sẽ trả về:
-```json
-{
-  "appId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  "displayName": "terraform-sp",
-  "password": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-  "tenant": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-}
-```
-
-### Bước 2: Thêm GitHub Secrets
-
-Vào **Settings → Secrets and variables → Actions** của repository, thêm các secret:
-
-| Secret Name | Value |
-|---|---|
-| `ARM_CLIENT_ID` | appId từ output trên |
-| `ARM_CLIENT_SECRET` | password từ output trên |
-| `ARM_SUBSCRIPTION_ID` | Subscription ID |
-| `ARM_TENANT_ID` | tenant từ output trên |
-| `AZURE_CREDENTIALS` | JSON object của Service Principal (xem bước 3) |
-
-### Bước 3: Format AZURE_CREDENTIALS
-
-Chạy lệnh sau để lấy JSON format:
-
-```bash
-az ad sp create-for-rbac \
-  --name "terraform-sp" \
-  --role "Contributor" \
-  --scopes "/subscriptions/$SUBSCRIPTION_ID" \
-  --json-auth
-```
-
-Copy toàn bộ JSON output và dán vào GitHub secret `AZURE_CREDENTIALS`.
-
 ## 📁 Cấu trúc Terraform
 
 ```
 terraform/
-├── provider.tf       # Azure provider configuration
-├── variables.tf      # Input variables
+├── provider.tf      # Azure provider configuration
+├── variables.tf     # Input variables
 ├── main.tf          # Main infrastructure resources
 ├── outputs.tf       # Output values
 └── terraform.tfvars # Variable values
@@ -113,7 +55,7 @@ terraform/
 - Private key được lưu trữ an toàn (sensitive output)
 - Export từ Terraform output để kết nối VM
 
-## 🚀 Deployment Process
+## Deployment Process
 
 ### Local Testing
 
@@ -146,7 +88,7 @@ terraform apply
 5. **Terraform Plan** → Tạo plan
 6. **Terraform Apply** → Apply changes (chỉ khi push vào main)
 
-## 📊 Lấy Outputs
+## Lấy Outputs
 
 ### Sau khi deployment thành công:
 
@@ -178,70 +120,7 @@ chmod 600 ~/.ssh/azure_vm.pem
 ssh -i ~/.ssh/azure_vm.pem azureuser@$PUBLIC_IP
 ```
 
-## 🔄 Update Infrastructure
-
-1. Sửa file Terraform (e.g., `main.tf`, `variables.tf`)
-2. Push lên GitHub
-3. Workflow tự động chạy
-4. Review plan trong GitHub Actions output
-5. Nếu OK, apply sẽ tự động chạy trên main branch
-
-## ⚙️ Customize Variables
-
-Sửa `terraform/terraform.tfvars`:
-
-```hcl
-azure_region       = "Southeast Asia"  # Thay đổi region
-environment        = "dev"              # dev, staging, prod
-project_name       = "terraform-demo"   # Tên project
-vm_size            = "Standard_B2s"     # VM size
-admin_username     = "azureuser"        # Username
-enable_nat_gateway = true              # Enable/disable NAT Gateway
-```
-
-## 📝 NSG Rules Customization
-
-Để thêm hoặc sửa NSG rules, edit file `terraform/main.tf` section `azurerm_network_security_group`:
-
-```hcl
-security_rule {
-  name                       = "AllowCustom"
-  priority                   = 130
-  direction                  = "Inbound"
-  access                     = "Allow"
-  protocol                   = "Tcp"
-  source_port_range          = "*"
-  destination_port_range     = "8080"
-  source_address_prefix      = "*"
-  destination_address_prefix = "*"
-}
-```
-
-## 🐛 Troubleshooting
-
-### 1. Checkov fails with HIGH severity issues
-
-**Lỗi**: Workflow dừng ở Checkov scan
-**Giải pháp**: 
-- Xem chi tiết trong GitHub Actions logs
-- Fix các issue được liệt kê
-- Thử chạy Checkov locally: `checkov -d terraform --framework terraform`
-
-### 2. Service Principal không có quyền
-
-**Lỗi**: "Authorization failed" hoặc "Insufficient privileges"
-**Giải pháp**:
-- Check Service Principal role: `az role assignment list --assignee <appId>`
-- Cấp thêm quyền nếu cần
-
-### 3. Terraform state conflict
-
-**Lỗi**: "Error acquiring the state lock"
-**Giải pháp**:
-- Xóa lock file: `terraform force-unlock <LOCK_ID>`
-- Hoặc thử lại workflow sau vài phút
-
-## 🧹 Cleanup
+## Cleanup
 
 ### Xóa infrastructure:
 
@@ -261,5 +140,3 @@ terraform destroy -auto-approve
 
 ---
 
-**Created by**: Terraform GitHub Actions Automation
-**Last updated**: 2026-03-25
